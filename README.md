@@ -95,6 +95,7 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 
 
 **Summary - Values for Outcomes**
+
 |        | Act + | Act -   |
 |--------|-------|---------|
 | Pred + | TP +6 | FP -200 |
