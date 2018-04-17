@@ -44,7 +44,7 @@ At present the auto-approval rate for referrals is 30% - a new model would need 
 
 CatBoost allows for categorical features to be left "as is" - it isn't necessary to one-hot-encode them. But it's important to know what's going on under the hood. The parameter `one_hot_max_size` (it accepts values 1 to 255) serves as the cut-off point for how CatBoost will treat each categorical variable. Features where the number of levels is *less than* the cutoff will be one-hot-encoded. If the number of levels is *greater than* the cutoff, CatBoost transforms them into numerical features per the following:
 
-<img alt="Correlation Matrix" src="imgs/cat_to_num.gif" width='500'>
+<img alt="Correlation Matrix" src="imgs/cat_to_num.png" width='500'>
 
 <sub><b>Figure: </b> Correlations between approvals and predictors. </sub>
 
