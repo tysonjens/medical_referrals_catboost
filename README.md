@@ -25,6 +25,8 @@ ___
 4. [Results](#results)
 5. [Future Direction](#future-direction)
 
+___
+
 ## Measures of Success
 
 
@@ -36,11 +38,11 @@ At present the auto-approval rate for referrals is 30% - a new model would need 
 
 <img alt="Precision vs. Auto Approval Rate" src="imgs/AA_prec_goal.png" width=''>
 
-<sub><b>Figure: </b> Success is precision > 98% while auto-approvals are greater than 40%. </sub>
+___
 
 ## Data
 
-The data includes 2,000,000 referrals to 40 or more specialties during 2017. Each referral is either approved (93%) or denied (7%), but denial rates vary across specialty.
+Data include 2,000,000 referrals to 40 or more specialties during 2017. Each referral is either approved (93%) or denied (7%), but denial rates vary across specialty.
 
 Name | Variable Name | Description | Type
 ------|----------|--------|----
@@ -60,7 +62,7 @@ Procedure Code | cpt1, cpt2 ... | What is being requested in the referral | cat 
 
 
 
-
+___
 
 ## CatBoost
 
@@ -79,6 +81,8 @@ CatBoost allows for categorical features to be left "as is" - it isn't necessary
 
 <img alt="Categorical to Numerical Transformation" src="imgs/cat_to_num.png" width='300'>
 
+___
+
 ## Models
 
 #### Logistic Regression Results
@@ -96,16 +100,6 @@ AUC-ROC            |  Precision at 40%
 ```python
 model_oob = CatBoostClassifier()
 ```
-Grid Search
-
-The tutorial from the blog *Effective ML* was used to conduct coarse and refined searches over the following parameters:
-
-* `l2_leaf_reg` - Used for leaf value calculation.
-* `iterations` - Number of trees
-* `learning_rate`
-* `depth` - how deep is each tree
-
-The result was Model 1.
 
 #### CatBoost - Model 1
 
@@ -148,6 +142,11 @@ In *The Elements of Statistical Learning*, Hastie, Tibshirani, and Friedman (pp 
 
 In addition, I added "rsm=.5" to randomly choose a subset of features to consider at each iteration, akin to Random Forest. I felt this was important as I have a high number of features dominated by two that are more important.
 
+```python
+model11 = CatBoostClassifier(depth=4, iterations=4000, learning_rate=0.01, l2_leaf_reg=20,
+class_weights=class_weight, use_best_model=True, one_hot_max_size=100, rsm=.5)
+```
+
 #### Feature Importance
 
 *The physician receiving the referral, and the first line item of what was requested appear to be more important that other variables.*
@@ -158,7 +157,7 @@ From Breiman et al. (1984), in a single tree the relevance of predictor (X) can 
 
 As an extension, in additive models an average can be taken over many trees:
 
-<img alt="Categorical to Numerical Transformation" src="imgs/imp_boost.png" width='200'>
+<img alt="Categorical to Numerical Transformation" src="imgs/imp_boost.png" width='150'>
 
 Intuitively, each time a variable is selected as an optimal split variable, it's importance increases by how much information it provided in that split.
 
@@ -167,12 +166,7 @@ Model 1 Feature importances:
 
 <img alt="Categorical to Numerical Transformation" src="imgs/featimps.png" width='600'>
 
-```python
-model11 = CatBoostClassifier(depth=4, iterations=4000, learning_rate=0.01, l2_leaf_reg=20,
-class_weights=class_weight, use_best_model=True, one_hot_max_size=100, rsm=.5)
-```
-
-
+___
 
 ## Results
 
@@ -213,10 +207,13 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 
 <img alt="Profit Curve Comparison" src="imgs/prof_fig_compare.png" width='600'>
 
+___
+
 ## Future Direction
 
 * Select most important features and fit a multi-layer perceptron neural net.
 * Model change points in physicians referral rates to aide medical directors managing utilization.
+* Fit individual models by specialty so the specialty-by-specialty nuances don't get washed out.
 
 
 #### Acknowledgements
