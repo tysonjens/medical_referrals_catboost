@@ -21,12 +21,10 @@ ___
 #### Table of Contents
 1. [Measures of Success](#measures-of-success)
 2. [Data](#data)
-      * Feature Engineering
-      * Training, Validation and Test
-Sets
 3. [CatBoost](#catboost)
+4. [Models](#models)
 4. [Results](#results)
-5. [Next Steps](#next-steps)
+5. [Future Direction](#future-direction)
 
 ## Measures of Success
 
@@ -132,11 +130,17 @@ eval_metric='Accuracy')
 
 <img alt="Categorical to Numerical Transformation" src="imgs/toward_imp.png" width='600'>
 
+## Results
+
 #### Receiver Operating Characteristic
+
+*All models improved upon the logistic regression, including the model 1 on "production" data.*
 
 <img alt="Categorical to Numerical Transformation" src="imgs/roc_auc_compare.png" width='600'>
 
 #### Precision at 40% Auto Approval Rate
+
+*All models exceed the goal of 98% precision at 40% auto-approval rate.*
 
 <img alt="Categorical to Numerical Transformation" src="imgs/prec_aa_compare.png" width='600'>
 
@@ -147,22 +151,26 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 
 |    Outcome    | Reason |
 |--------|-------|
-| **True Positive (TP)** | (+$6) Currently the provider spends money to identify approvals - if the algorithm can do it effectively the company can save this budget. |
-| **False Positive (FP)** | (-$200) if the algorithm predicts "approve" when the referral should be denied, the company will spend money on the referral that it otherwise wouldn't. The cost will vary greatly, but we assign a somewhat liberal value of -$200 to account for this risk. |
-| **False Negative (FN)** | (-$1) Similar to TP, if the algorithm predicts that a referral will be denied, the company will spend money to determine whether is indeed a denial. |
-| **True Negative (TN)** | (+$3) When the algorithm effectively identifies a denial, the company can triage the referral more quickly and more effectively. This adds value. |
+| **True Positive (TP)** | (**+$6**) Currently the provider spends money to identify approvals - if the algorithm can do it effectively the company can save this budget. |
+| **False Positive (FP)** | (**-$150**) if the algorithm predicts "approve" when the referral should be denied, the company will spend money on the referral that it otherwise wouldn't. The cost will vary greatly, but we assign a somewhat liberal value of -$200 to account for this risk. |
+| **False Negative (FN)** | (**-$1**) Similar to TP, if the algorithm predicts that a referral will be denied, the company will spend money to determine whether is indeed a denial. |
+| **True Negative (TN)** | (**+$3**) When the algorithm effectively identifies a denial, the company can triage the referral more quickly and more effectively. This adds value. |
 
 
 **Summary - Values for Outcomes**
 
 |        | Act + | Act -   |
 |--------|-------|---------|
-| Pred + | TP +6 | FP -200 |
+| Pred + | TP +6 | FP -150 |
 | Pred - | FN -1 |  TN +3  |
+
+*Without weighted classes, "Out of the Box" slightly underperforms model 1, and offers a vary small window of thresholds to maximize profit. Model 1 applied to production data slightly underperforms relatives to Model 1 and Model 3.*
 
 <img alt="Profit Curve Comparison" src="imgs/prof_fig_compare.png" width='600'>
 
-## Next Steps
+## Future Direction
+
+*
 
 #### Acknowledgements
 
