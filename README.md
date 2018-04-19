@@ -45,15 +45,24 @@ At present the auto-approval rate for referrals is 30% - a new model would need 
 
 The data includes 2,000,000 referrals to 40 or more specialties during 2017. Each referral is either approved (93%) or denied (7%), but denial rates vary across specialty.
 
+Name | Variable Name | Description | Type
+------|----------|--------|----
+**Approve** (target) | is_approve | 1 if referral approved, else 0 | bin
+Date Received | dater | time / date stamp of when referral received | date
+Registration Date | regdate | Date when the member registered with plan | date
+Sex | is_male | 1 if male, else 0 | bin
+Age | age | integer age of patient | int
+Priority | priority_ | Physicians can indicate "Routine", "urgent", "emergency" | cat (4)
+Patient Request | pat_req | 1 if patient requested the referral, else 0 | bin
+Referring Physician | ref_prov | name of physician submitting the referral | cat (4000)
+Refer "To" Physician | ref_to_prov | name of physician received the referral | cat (10000)
+Specialty | ref_to_spec | E.g. "Cardiology", "Dermatology" | cat (50)
+Procedure Code | cpt1, cpt2 ... | What is being requested in the referral | cat (14000)
+
 <img alt="Referral Volume by Specialty" src="imgs/vol_by_specs.png" width='600'>
 
 <sub><b>Figure: </b> Success is precision > 98% while auto-approvals are greater than 40%. </sub>
 
-#### Feature Engineering
-
-CatBoost allows for categorical features to be left "as is" - it isn't necessary to one-hot-encode them. But it's important to know what's going on under the hood. The parameter `one_hot_max_size` (it accepts values 1 to 255) serves as the cut-off point for how CatBoost will treat each categorical variable. Features where the number of levels is *less than* the cutoff will be one-hot-encoded. If the number of levels is *greater than* the cutoff, CatBoost transforms them into numerical features per the following:
-
-<img alt="Categorical to Numerical Transformation" src="imgs/cat_to_num.png" width='300'>
 
 
 
@@ -63,21 +72,28 @@ CatBoost was released by Yandex in 2017. While it is open source, documentation 
 
 * Quite good "out of the box"
 * Early Stopping
-* Easily handles categorical variables - hence "Cat" - Boost
+* Easily handles categorical variables - hence "Cat" - Boost (see below)
 * Quality output during training
 * Won some Kaggle competitions
 * Slower to train relative to XGBoost, and LightBoost
+
+#### CatBoost's handling of categorical variables
+
+CatBoost allows for categorical features to be left "as is" - it isn't necessary to one-hot-encode them. But it's important to know what's going on under the hood. The parameter `one_hot_max_size` (it accepts values 1 to 255) serves as the cut-off point for how CatBoost will treat each categorical variable. Features where the number of levels is *less than* the cutoff will be one-hot-encoded. If the number of levels is *greater than* the cutoff, CatBoost transforms them into numerical features per the following:
+
+<img alt="Categorical to Numerical Transformation" src="imgs/cat_to_num.png" width='300'>
 
 ## Models
 
 #### Logistic Regression Results
 
-*In a prior project, Logistic Regression Models were tested. Categorical variables (with several thousand levels) were encoded into numerical features based on each level's average of the response variable. Note that this is similar to CatBoost's treatment of categorical variables with many levels.*
+*In a prior project, logistic regression models were tested. Categorical variables (with several thousand levels) were encoded into numerical features based on each level's average of the response variable. Note that this is similar to CatBoost's treatment of categorical variables with many levels.*
 
-<img alt="Logistic Prec AA" src="imgs/AA_prec_test_few2.png" width='400'>
+AUC-ROC            |  Precision at 40%
+:-------------------------:|:-------------------------:
+<img alt="Logistic Prec AA" src="imgs/ROC_test_few2.png" width='400'> |  <img alt="Logistic Prec AA" src="imgs/AA_prec_test_few2.png" width='400'>
 
-___
-<img alt="Logistic Prec AA" src="imgs/ROC_test_few2.png" width='400'>
+
 
 #### CatBoost - Out of the Box
 
