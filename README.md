@@ -37,7 +37,7 @@ Sets
 
 At present the auto-approval rate for referrals is 30% - a new model would need to approve at least 40% of referrals to be worth the implementation effort. The model also needs to be precise - to have very few false positives.  This is because approving referrals that would normally be denied could be costly - worse, it could be for a treatment that isn't medically necessary for the patient.
 
-<img alt="Precision vs. Auto Approval Rate" src="imgs/AA_prec_goal.png" width='400'>
+<img alt="Precision vs. Auto Approval Rate" src="imgs/AA_prec_goal.png" width=''>
 
 <sub><b>Figure: </b> Success is precision > 98% while auto-approvals are greater than 40%. </sub>
 
@@ -45,7 +45,7 @@ At present the auto-approval rate for referrals is 30% - a new model would need 
 
 The data includes 2,000,000 referrals to 40 or more specialties during 2017. Each referral is either approved (93%) or denied (7%), but denial rates vary across specialty.
 
-<img alt="Referral Volume by Specialty" src="imgs/vol_by_specs.png" width='400'>
+<img alt="Referral Volume by Specialty" src="imgs/vol_by_specs.png" width='600'>
 
 <sub><b>Figure: </b> Success is precision > 98% while auto-approvals are greater than 40%. </sub>
 
@@ -53,52 +53,76 @@ The data includes 2,000,000 referrals to 40 or more specialties during 2017. Eac
 
 CatBoost allows for categorical features to be left "as is" - it isn't necessary to one-hot-encode them. But it's important to know what's going on under the hood. The parameter `one_hot_max_size` (it accepts values 1 to 255) serves as the cut-off point for how CatBoost will treat each categorical variable. Features where the number of levels is *less than* the cutoff will be one-hot-encoded. If the number of levels is *greater than* the cutoff, CatBoost transforms them into numerical features per the following:
 
-<img alt="Categorical to Numerical Transformation" src="imgs/cat_to_num.png" width='400'>
+<img alt="Categorical to Numerical Transformation" src="imgs/cat_to_num.png" width='300'>
 
 
 
 ## CatBoost
 
-CatBoost was released by Yandex in 2017
+CatBoost was released by Yandex in 2017. While it is open source, documentation is focused on making it easy to use, and less about how it works. Key features/facts include:
 
+* Quite good "out of the box"
+* Early Stopping
+* Easily handles categorical variables - hence "Cat" - Boost
+* Quality output during training
+* Won some Kaggle competitions
+* Slower to train relative to XGBoost, and LightBoost
+
+## Models
+
+#### Logistic Regression Results
+
+*In a prior project, Logistic Regression Models were tested. Categorical variables (with several thousand levels) were encoded into numerical features based on each level's average of the response variable. Note that this is similar to CatBoost's treatment of categorical variables with many levels.*
+
+<img alt="Logistic Prec AA" src="imgs/AA_prec_test_few2.png" width='400'>
+
+___
+<img alt="Logistic Prec AA" src="imgs/ROC_test_few2.png" width='400'>
+
+#### CatBoost - Out of the Box
+
+```python
+model_oob = CatBoostClassifier()
+```
 #### Grid Search
 
 The tutorial from the blog *Effective ML* was used to conduct coarse and refined searches over the following parameters:
 
-* `l2_leaf_reg`
-* `iterations`
+* `l2_leaf_reg` - Used for leaf value calculation.
+* `iterations` - Number of trees
 * `learning_rate`
-* `depth`
+* `depth` - how deep is each tree
 
-## Results
+#### CatBoost - Model 1
 
-#### Logistic Regression Results
+```python
+model1 = CatBoostClassifier(iterations=100, l2_leaf_reg=10,
+learning_rate=.5, depth=3, class_weights=class_weight,
+use_best_model=True, eval_metric='Accuracy')
+```
 
-#### CatBoost - Out of the Box
+#### CatBoost - Model 3
 
-
-
-#### CatBoost - Parameters Tuned
-
-* `l2_leaf_reg` = 10
-* `iterations` = 306
-* `learning_rate` = 0.5
-* `depth` = 3
-
-ROC-AUC: 84%
-
-<img alt="Categorical to Numerical Transformation" src="imgs/auc_model1.png" width='400'>
-
-___
-Precision at 40%
-
-<img alt="Categorical to Numerical Transformation" src="imgs/aa_model1.png" width='400'>
-
-#### Receiver Operating Characteristic (ROC)
+```python
+model3 = CatBoostClassifier(depth=8, iterations=200, learning_rate=0.1,
+l2_leaf_reg=30, class_weights=class_weight, use_best_model=True,
+eval_metric='Accuracy')
+```
 
 
+#### CatBoost - Model 1 - production
 
-#### Precision at 40% Auto-approval rate
+*If the model is put into production, referrals won't be manually labeled anymore (& assumed to be accurate). Below is outline for a process to tune the model monthly using a small percentage of referrals (random selection) that are held out & manually labeled in order to continually tune the model.*
+
+<img alt="Categorical to Numerical Transformation" src="imgs/toward_imp.png" width='600'>
+
+#### Receiver Operating Characteristic
+
+<img alt="Categorical to Numerical Transformation" src="imgs/roc_auc_compare.png" width='600'>
+
+#### Precision at 40% Auto Approval Rate
+
+<img alt="Categorical to Numerical Transformation" src="imgs/prec_aa_compare.png" width='600'>
 
 #### Profit Curve
 
@@ -119,6 +143,8 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 |--------|-------|---------|
 | Pred + | TP +6 | FP -200 |
 | Pred - | FN -1 |  TN +3  |
+
+<img alt="Profit Curve Comparison" src="imgs/prof_fig_compare.png" width='600'>
 
 ## Next Steps
 
