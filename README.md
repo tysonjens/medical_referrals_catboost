@@ -6,15 +6,17 @@ by: Tyson Ward
 
 #### Executive Summary
 
-The CatBoost algorithm was able
+The CatBoost algorithm was able identify the first 40% of referral approvals with 98% accuracy. A process for implementing the model into production is proposed.
 
-#### Background
+#### Abstract
 
-Most large healthcare provider groups are shifting from fee-for-service (FFS) models, where the group makes money each time it performs a service, to value-based models (VBM), where the group takes financial responsibility for patient from insurance companies in return for a monthly premium (PMPM). In VBM groups are more aligned with patients' long term health because they reduce costs by proactively managing patients' health today in the hopes of preventing them from becoming sick in the future.
+Most large healthcare provider groups are shifting from fee-for-service (FFS) models, where the group makes money each time it performs a service, to value-based models (VBM), where the group takes financial responsibility for patients from insurance companies in return for a monthly premium (PMPM). In VBM groups are more aligned with patients' long term health because they reduce costs by proactively managing patients' health today in the hopes of preventing them from becoming sick in the future.
 
-For medical provider groups with mature VBM, there is a need to monitor what physicians and specialists are requesting for patients to ensure care provided is medically necessary and covered by the plans the group has contracted with. In addition, they need to ensure the patient is being referred to a specialist who is effective and is known to work with other "in-network" facilities and specialists.
+For medical provider groups with mature VBM, there is a need to monitor what physicians and specialists are requesting for patients to ensure care provided is medically necessary and covered by the plans the group has contracted with. In addition, they need to ensure patients are being referred to a specialist who is effective and known to work with other "in-network" facilities and specialists.
 
 This capability is called *utilization management* because the provider group is trying to manage how its patients utilize healthcare resources. The request from a physician to "utilize" resources is documented in a referral.
+
+Health *insurers* are able to "auto-approve" referrals at very high rates because they have immediate access to "coverage of benefits" information.  For health *providers* that may contract with several insurers the process can be more onerous. A leading VBM provider group is only able to auto-approve 30% of referrals. The following is an attempt to predict whether an incoming (previously unseen) referral with approve or deny based on historical referral data.
 
 ___
 
@@ -152,25 +154,20 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 |    Outcome    | Reason |
 |--------|-------|
 | **True Positive (TP)** | (**+$6**) Currently the provider spends money to identify approvals - if the algorithm can do it effectively the company can save this budget. |
-| **False Positive (FP)** | (**-$150**) if the algorithm predicts "approve" when the referral should be denied, the company will spend money on the referral that it otherwise wouldn't. The cost will vary greatly, but we assign a somewhat liberal value of -$200 to account for this risk. |
+| **False Positive (FP)** | (**-$150**) if the algorithm predicts "approve" when the referral should be denied, the company will spend money on the referral that it otherwise wouldn't. The cost will vary greatly, but we assign a somewhat liberal value of -$150 to account for this risk. |
 | **False Negative (FN)** | (**-$1**) Similar to TP, if the algorithm predicts that a referral will be denied, the company will spend money to determine whether is indeed a denial. |
 | **True Negative (TN)** | (**+$3**) When the algorithm effectively identifies a denial, the company can triage the referral more quickly and more effectively. This adds value. |
 
 
-**Summary - Values for Outcomes**
-
-|        | Act + | Act -   |
-|--------|-------|---------|
-| Pred + | TP +6 | FP -150 |
-| Pred - | FN -1 |  TN +3  |
-
-*Without weighted classes, "Out of the Box" slightly underperforms model 1, and offers a vary small window of thresholds to maximize profit. Model 1 applied to production data slightly underperforms relatives to Model 1 and Model 3.*
+*Without weighted classes, "Out of the Box" slightly underperforms model 1, and offers a very small window of thresholds to maximize profit. Model 1 applied to production data slightly underperforms relatives to Model 1 and Model 3.*
 
 <img alt="Profit Curve Comparison" src="imgs/prof_fig_compare.png" width='600'>
 
 ## Future Direction
 
-*
+* Select most important features and fit a multi-layer perceptron neural net.
+* Model change points in physicians referral rates to aide medical directors managing utilization.
+
 
 #### Acknowledgements
 
