@@ -1,9 +1,6 @@
 ## CatBoost for Utilization Management
 *Applying Catboost to classify medical referrals as "approved" or "denied".*
 
-by: Tyson Ward
-
-
 #### Executive Summary
 
 The CatBoost algorithm was able identify the first 40% of referral approvals with 98% accuracy. A process for implementing the model into production is proposed.
@@ -61,7 +58,6 @@ Procedure Code | cpt1, cpt2 ... | What is being requested in the referral | cat 
 
 <img alt="Referral Volume by Specialty" src="imgs/vol_by_specs.png" width='600'>
 
-<sub><b>Figure: </b> Success is precision > 98% while auto-approvals are greater than 40%. </sub>
 
 
 
@@ -100,7 +96,7 @@ AUC-ROC            |  Precision at 40%
 ```python
 model_oob = CatBoostClassifier()
 ```
-#### Grid Search
+Grid Search
 
 The tutorial from the blog *Effective ML* was used to conduct coarse and refined searches over the following parameters:
 
@@ -109,7 +105,18 @@ The tutorial from the blog *Effective ML* was used to conduct coarse and refined
 * `learning_rate`
 * `depth` - how deep is each tree
 
+The result was Model 1.
+
 #### CatBoost - Model 1
+
+The tutorial from the blog *Effective ML* was used to conduct coarse and refined searches grid over the following parameters:
+
+* `l2_leaf_reg` - Used for leaf value calculation.
+* `iterations` - Number of trees
+* `learning_rate` - otherwise known as shrinkage rate.
+* `depth` - how deep is each tree
+
+The result was Model 1.
 
 ```python
 model1 = CatBoostClassifier(iterations=100, l2_leaf_reg=10,
@@ -125,14 +132,57 @@ l2_leaf_reg=30, class_weights=class_weight, use_best_model=True,
 eval_metric='Accuracy')
 ```
 
-
 #### CatBoost - Model 1 - production
 
 *If the model is put into production, referrals won't be manually labeled anymore (& assumed to be accurate). Below is outline for a process to tune the model monthly using a small percentage of referrals (random selection) that are held out & manually labeled in order to continually tune the model.*
 
 <img alt="Categorical to Numerical Transformation" src="imgs/toward_imp.png" width='600'>
 
+
+#### CatBoost - Model 11 - High iterations, low learning rate.
+
+In *The Elements of Statistical Learning*, Hastie, Tibshirani, and Friedman (pp 361- 367) offer the following guidelines for lowering test error rates with boosting ensembles.
+
+* **Depth** - especially when interactions between variables may be important, tree depth (J) of 3 or more is important. J = 1 doesn't allow for any interactions and J = 2 only allows for first order interactions.  In practice, 4 < J < 8 offers enough depth without compromising computational time.
+* **Number of Trees** and **Learning Rate** - Empirically it has been found that smaller learning rates favor smaller test error, but must be paired with a higher number trees to reach a test error minimum. A good strategy is to set the learning rate to be very small and use early stopping to identify the right number of trees.
+
+In addition, I added "rsm=.5" to randomly choose a subset of features to consider at each iteration, akin to Random Forest. I felt this was important as I have a high number of features dominated by two that are more important.
+
+#### Feature Importance
+
+*The physician receiving the referral, and the first line item of what was requested appear to be more important that other variables.*
+
+From Breiman et al. (1984), in a single tree the relevance of predictor (X) can be measured by:
+
+<img alt="Categorical to Numerical Transformation" src="imgs/imp_tree.png" width='200'>
+
+As an extension, in additive models an average can be taken over many trees:
+
+<img alt="Categorical to Numerical Transformation" src="imgs/imp_boost.png" width='200'>
+
+Intuitively, each time a variable is selected as an optimal split variable, it's importance increases by how much information it provided in that split.
+
+Model 1 Feature importances:
+
+
+<img alt="Categorical to Numerical Transformation" src="imgs/featimps.png" width='600'>
+
+```python
+model11 = CatBoostClassifier(depth=4, iterations=4000, learning_rate=0.01, l2_leaf_reg=20,
+class_weights=class_weight, use_best_model=True, one_hot_max_size=100, rsm=.5)
+```
+
+
+
 ## Results
+
+|                | Test Accuracy | ROC-AUC | Precision, 40% AA | Max Profit |
+|:--------------:|:-------------:|:-------:|:-----------------:|:----------:|
+|   Model - OOB  |               |         |                   |            |
+|     Model 1    |               |         |                   |            |
+|     Model 3    |               |         |                   |            |
+| Model 1 - prod |               |         |                   |            |
+|    Model 11    |               |         |                   |            |
 
 #### Receiver Operating Characteristic
 
@@ -173,4 +223,9 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 
 * [Yandex - CatBoost](https://tech.yandex.com/catboost/)
 * [Effective ML - blog for gridsearch](https://effectiveml.com/using-grid-search-to-optimise-catboost-parameters.html)
+* Hastie, T., Tibshirani, R., Friedman, J. (2017). *The Elements of Statistical Learning*, Springer, New York. pp. 353-371.
+* Breiman, L., Friedman, J., Olshen, R. and Stone, C. (1984). *Classification and Regression Trees*, Wadsworth, New York.
+
+#### Resources
+
 * [Press Release: Yandex launches CatBoost](https://techcrunch.com/2017/07/18/yandex-open-sources-catboost-a-gradient-boosting-machine-learning-librar/)
