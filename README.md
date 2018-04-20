@@ -222,8 +222,7 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 
 *Positive values indicate the model has more than expected false negatives for that specialty. This means the model did a poorer job at spotting that specialty's denials.*
 
-
-**False Negatives (Relative to Expected), by Specialty**
+<center> <h5>False Negatives (Relative to Expected), by Specialty</h1> </center>
 <img alt="Profit Curve Comparison" src="imgs/expected_fn.png" width='1000'>
 
 
