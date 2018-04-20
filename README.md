@@ -3,7 +3,7 @@
 
 #### Executive Summary
 
-The CatBoost algorithm was able identify the first 40% of referral approvals with 98% accuracy. A process for implementing the model into production is proposed.
+The CatBoost algorithm was able identify the first 40% of referral approvals with 98.5% accuracy. A process for implementing the model into production is proposed.
 
 #### Abstract
 
@@ -31,12 +31,12 @@ ___
 
 
 1. Precision at 40% auto approval rate
-2. Area under the receiver operation characteristc curve
+2. Area under the receiver operation characteristic curve (AUC-ROC)
 3. Incremental profit
 
 At present the auto-approval rate for referrals is 30% - a new model would need to approve at least 40% of referrals to be worth the implementation effort. The model also needs to be precise - to have very few false positives.  This is because approving referrals that would normally be denied could be costly - worse, it could be for a treatment that isn't medically necessary for the patient.
 
-<img alt="Precision vs. Auto Approval Rate" src="imgs/AA_prec_goal.png" width=''>
+<img alt="Precision vs. Auto Approval Rate" src="imgs/AA_prec_goal.png" width='500'>
 
 ___
 
@@ -81,13 +81,23 @@ CatBoost allows for categorical features to be left "as is" - it isn't necessary
 
 <img alt="Categorical to Numerical Transformation" src="imgs/cat_to_num.png" width='300'>
 
+Effectively, each level is replaced by the mean of the response variable across all observations where the level occurs.
 ___
 
 ## Models
 
+Six models are compared:
+
+* Logistic Regression
+* CatBoost - Out of the Box
+* CatBoost - Model 1
+* CatBoost - Model 3
+* CatBoost - Model 1 - Production
+* CatBoost - Model 11
+
 #### Logistic Regression Results
 
-*In a prior project, logistic regression models were tested. Categorical variables (with several thousand levels) were encoded into numerical features based on each level's average of the response variable. Note that this is similar to CatBoost's treatment of categorical variables with many levels.*
+*In a prior project logistic regression models were tested. The categorical variables (with several thousand levels) were encoded into numerical features based on each level's average of the response variable. Note that this is similar to CatBoost's treatment of categorical variables with many levels.*
 
 AUC-ROC            |  Precision at 40%
 :-------------------------:|:-------------------------:
@@ -172,6 +182,7 @@ ___
 
 |                |  ROC-AUC | Precision, 40% AA | Max Profit |
 |:--------------:|:-------:|:-----------------:|:----------:|
+|   Logistic  |    .78    |     .976        |  -   |
 |   Model - OOB  |    .84    |     .984        |  $338K    |
 |     Model 1    |   .84    |      .985       | $391K       |
 |     Model 3    |    **.85** |      .986    |   $374K     |
@@ -192,7 +203,7 @@ ___
 
 #### Profit Curve
 
-A profit curve can help us choose which threshold to set to obtain the largest amount of incremental value from our algorithm. In this case we're looking for a model that can *precisely* identify a large amount of referrals - that is, we want true positives but very, very few false positives. Below is the justification for values of the 4 possible outcomes:
+A profit curve can help us choose which threshold to set to obtain the largest amount of incremental value from our algorithm. In this case we're looking for a model that can *precisely* identify a large amount of approvals without mistaking them for denials - that is, we want true positives but very, very few false positives. Below is the justification for values of the 4 possible outcomes:
 
 
 |    Outcome    | Reason |
@@ -221,6 +232,8 @@ ___
 * Select most important features and fit a multi-layer perceptron neural net.
 * Model change points in physicians referral rates to aide medical directors managing utilization.
 * Fit individual models by specialty so the specialty-by-specialty nuances don't get washed out.
+* Grid search across higher limits of depths and iterations.
+* Understand relative cost of False Negatives.  Could the business live with them?
 
 
 #### Acknowledgements
