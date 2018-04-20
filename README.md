@@ -130,7 +130,7 @@ eval_metric='Accuracy')
 
 *If the model is put into production, referrals won't be manually labeled anymore (& assumed to be accurate). Below is outline for a process to tune the model monthly using a small percentage of referrals (random selection) that are held out & manually labeled in order to continually tune the model.*
 
-<img alt="Categorical to Numerical Transformation" src="imgs/toward_imp.png" width='600'>
+<img alt="Categorical to Numerical Transformation" src="imgs/toward_imp.png" width='800'>
 
 
 #### CatBoost - Model 11 - High iterations, low learning rate.
