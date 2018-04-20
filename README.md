@@ -58,7 +58,7 @@ Refer "To" Physician | ref_to_prov | name of physician received the referral | c
 Specialty | ref_to_spec | E.g. "Cardiology", "Dermatology" | cat (50)
 Procedure Code | cpt1, cpt2 ... | What is being requested in the referral | cat (14000)
 
-<img alt="Referral Volume by Specialty" src="imgs/vol_by_specs.png" width='600'>
+<img alt="Referral Volume by Specialty" src="imgs/vol_by_specs.png" width='900'>
 
 
 
