@@ -58,7 +58,7 @@ Refer "To" Physician | ref_to_prov | name of physician received the referral | c
 Specialty | ref_to_spec | E.g. "Cardiology", "Dermatology" | cat (50)
 Procedure Code | cpt1, cpt2 ... | What is being requested in the referral | cat (14000)
 
-<img alt="Referral Volume by Specialty" src="imgs/vol_by_specs.png" width='900'>
+<img alt="Referral Volume by Specialty" src="imgs/vol_by_specs.png" width='1000'>
 
 
 
@@ -211,7 +211,7 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 
 *An analysis of False Negatives. Positive values indicate the model has more than expected false negatives for that specialty. This means the model did a poorer job at spotting that specialty's denials.*
 
-<img alt="Profit Curve Comparison" src="imgs/expected_fn.png" width='600'>
+<img alt="Profit Curve Comparison" src="imgs/expected_fn.png" width='1000'>
 
 -->**Takeaway** - there is potential to improve by fitting models to individual specialties.
 ___
