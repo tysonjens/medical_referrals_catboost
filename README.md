@@ -164,7 +164,7 @@ Intuitively, each time a variable is selected as an optimal split variable, it's
 Model 1 Feature importances:
 
 
-<img alt="Categorical to Numerical Transformation" src="imgs/featimps.png" width='600'>
+<img alt="Categorical to Numerical Transformation" src="imgs/featimps.png" width='800'>
 
 ___
 
