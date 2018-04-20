@@ -170,13 +170,13 @@ ___
 
 ## Results
 
-|                | Test Accuracy | ROC-AUC | Precision, 40% AA | Max Profit |
-|:--------------:|:-------------:|:-------:|:-----------------:|:----------:|
-|   Model - OOB  |               |         |                   |            |
-|     Model 1    |               |         |                   |            |
-|     Model 3    |               |         |                   |            |
-| Model 1 - prod |               |         |                   |            |
-|    Model 11    |               |         |                   |            |
+|                |  ROC-AUC | Precision, 40% AA | Max Profit |
+|:--------------:|:-------:|:-----------------:|:----------:|
+|   Model - OOB  |    .84    |     .984        |  $338K    |
+|     Model 1    |   .84    |      .985       | $391K       |
+|     Model 3    |    **.85** |      .986    |   $374K     |
+| Model 1 - prod |    .84 |       .984      |  $375K   |
+|    Model 11    |       .84  | **.986**      |  **$394K**     |
 
 #### Receiver Operating Characteristic
 
@@ -199,14 +199,21 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 |--------|-------|
 | **True Positive (TP)** | (**+$6**) Currently the provider spends money to identify approvals - if the algorithm can do it effectively the company can save this budget. |
 | **False Positive (FP)** | (**-$150**) if the algorithm predicts "approve" when the referral should be denied, the company will spend money on the referral that it otherwise wouldn't. The cost will vary greatly, but we assign a somewhat liberal value of -$150 to account for this risk. |
-| **False Negative (FN)** | (**-$1**) Similar to TP, if the algorithm predicts that a referral will be denied, the company will spend money to determine whether is indeed a denial. |
-| **True Negative (TN)** | (**+$3**) When the algorithm effectively identifies a denial, the company can triage the referral more quickly and more effectively. This adds value. |
+| **False Negative (FN)** | (**$0**) No change. |
+| **True Negative (TN)** | (**$0**) No change. |
 
 
 *Without weighted classes, "Out of the Box" slightly underperforms model 1, and offers a very small window of thresholds to maximize profit. Model 1 applied to production data slightly underperforms relatives to Model 1 and Model 3.*
 
 <img alt="Profit Curve Comparison" src="imgs/prof_fig_compare.png" width='600'>
 
+#### Analysis of False Negatives
+
+*An analysis of False Negatives. Positive values indicate the model has more than expected false negatives for that specialty. This means the model did a poorer job at spotting that specialty's denials.*
+
+<img alt="Profit Curve Comparison" src="imgs/expected_fn.png" width='600'>
+
+-->**Takeaway** - there is potential to improve by fitting models to individual specialties.
 ___
 
 ## Future Direction
