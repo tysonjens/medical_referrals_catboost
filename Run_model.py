@@ -1,5 +1,6 @@
 
 
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
@@ -17,8 +18,17 @@ from paramsearch import paramsearch
 from itertools import product,chain
 import warnings
 import pickle,os
+from functions import clean_data_train_test_split
 warnings.filterwarnings('ignore')
 
+
+font = {'family': 'sanserif',
+        'color':  'black',
+        'weight': 'normal',
+        'size': 20,
+        }
+
+x_train_train, y_train_train, x_train_val, y_train_val, x_test, y_test = clean_data_train_test_split()
 
 thresholds = np.linspace(0,1,51)
 
@@ -27,27 +37,20 @@ categorical_features_indices = np.where(x_train_train.dtypes != np.float)[0]
 class_weight = [3, .2]
 
 
-modcb=CatBoostClassifier(depth=6, iterations=1000, learning_rate=0.01, l2_leaf_reg=20, class_weights=class_weight,
+modcb=CatBoostClassifier(depth=4, iterations=50, learning_rate=0.1, l2_leaf_reg=20, class_weights=class_weight,
                          use_best_model=True, one_hot_max_size=100, rsm=.5)
 modcb.fit(x_train_train, y_train_train,cat_features=categorical_features_indices,eval_set=(x_train_val, y_train_val),plot=True)
 
 y_test_proba = modcb.predict_proba(x_test)[:,1]
 FPR, TPR, shresholds = roc_curve(y_test, y_test_proba)
 
-plotroc(FPR, TPR)
+func.plotroc(FPR, TPR)
 
-precisions, aarates = get_prec_aa_prof(thresholds, y_test, y_test_proba)
-plot_prec_aa(precisions, aarates)
-
-
-profs, prof_thresh = profit_curve(np.array([[6,-150],[-1,3]]), y_test_proba[:10000], np.array(y_test)[:10000])
+precisions, aarates = func.get_prec_aa_prof(thresholds, y_test, y_test_proba)
+func.plot_prec_aa(precisions, aarates)
 
 
-font = {'family': 'sanserif',
-        'color':  'black',
-        'weight': 'normal',
-        'size': 20,
-        }
+profs, prof_thresh = func.profit_curve(np.array([[6,-150],[-1,3]]), y_test_proba[:10000], np.array(y_test)[:10000])
 
 roc_auc = auc(FPR, TPR)
 
