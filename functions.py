@@ -198,8 +198,8 @@ if __name__ == '__main__':
 
     class_weight = [3, .2]
 
-    modcb=CatBoostClassifier(depth=5, iterations=150, learning_rate=0.3, l2_leaf_reg=20, class_weights=class_weight,
-                             use_best_model=True, one_hot_max_size=100, rsm=.5)
+    modcb=CatBoostClassifier(depth=8, iterations=200, learning_rate=0.1, l2_leaf_reg=30, class_weights=class_weight,
+                             use_best_model=True, eval_metric='Accuracy', one_hot_max_size=100, rsm=.5)
 
     modcb.fit(x_train_train, y_train_train,cat_features=categorical_features_indices,eval_set=(x_train_val, y_train_val),plot=True)
 

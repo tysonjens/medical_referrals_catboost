@@ -44,7 +44,7 @@ ___
 
 Data include 2,000,000 referrals to 40 or more specialties during 2017. Each referral is either approved (93%) or denied (7%), but denial rates vary across specialty.
 
-Name | Variable Name | Description | Type
+Name | Variable Name | Description | Type (levels)
 ------|----------|--------|----
 **Approve** (target) | is_approve | 1 if referral approved, else 0 | bin
 Date Received | dater | time / date stamp of when referral received | date
@@ -138,7 +138,7 @@ eval_metric='Accuracy')
 
 #### CatBoost - Model 1 - production
 
-*If the model is put into production, referrals won't be manually labeled anymore (& assumed to be accurate). Below is outline for a process to tune the model monthly using a small percentage of referrals (random selection) that are held out & manually labeled in order to continually tune the model.*
+*If the model is put into production, referrals won't be manually labeled anymore (& assumed to be accurate). Below is a outline for a process to tune the model monthly using a small percentage of referrals (random selection) that are held out & manually labeled in order to continually tune the model.*
 
 <img alt="Categorical to Numerical Transformation" src="imgs/toward_imp.png" width='800'>
 
@@ -220,7 +220,7 @@ A profit curve can help us choose which threshold to set to obtain the largest a
 
 #### Analysis of False Positives
 
-*Positive values indicate the model has more than expected false negatives for that specialty. This means the model did a poorer job at spotting that specialty's denials.*
+*Positive values indicate the model has more than expected false positives for that specialty. This means the model did a poorer job at spotting that specialty's denials.*
 
 **False Positives (Relative to Expected), by Specialty**
 
