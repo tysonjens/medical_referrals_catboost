@@ -20,7 +20,8 @@ warnings.filterwarnings('ignore')
 
 
 
-
+font_label={'size': 15}
+font_title={'weight': 'bold', 'size': 15}
 
 def clean_data_train_test_split():
 
@@ -34,11 +35,11 @@ def clean_data_train_test_split():
     referrals.drop(['REFERRAL_KEY','plantype', 'patient', 'regdate', 'created_by', 'site_name'], axis = 1, inplace=True)
 
     ## Train test split chronologically
-    test = referrals[referrals['dater']>'2017-08-31']
-    train = referrals[referrals['dater']<='2017-08-31']
+    test = referrals[(referrals['dater']>='2017-09-01')&(referrals['dater']<'2017-10-01')]
+    train = referrals[(referrals['dater']<'2017-09-01')&(referrals['dater']>='2017-06-01')]
 
-    train_val = train[train['dater']>'2017-07-31']
-    train_train = train[train['dater']<='2017-07-31']
+    train_val = train[train['dater']>'2017-08-15']
+    train_train = train[train['dater']<='2017-08-15']
 
     y_train_train = train_train['is_approve']
     x_train_train = train_train.drop(['is_approve','dater'], axis=1)
@@ -55,14 +56,14 @@ def plotroc(FPR, TPR, savestring=None):
     roc_auc = auc(FPR, TPR)
     plt.figure(figsize=(8,6))
     lw = 2
-    plt.plot(FPR, TPR, color='darkorange',
+    plt.plot(FPR, TPR, color='green',
              lw=lw, label='ROC curve (area = %0.2f)' % roc_auc)
     plt.plot([0, 1], [0, 1], color='navy', lw=lw, linestyle='--')
     plt.xlim([0.0, 1.0])
     plt.ylim([0.0, 1.05])
-    plt.xlabel('False Positive Rate')
-    plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic')
+    plt.xlabel('False Positive Rate', fontdict=font_label)
+    plt.ylabel('True Positive Rate', fontdict=font_label)
+    plt.title('Receiver operating characteristic', fontdict=font_title)
     plt.legend(loc="lower right")
     if savestring==None:
         pass
@@ -73,15 +74,14 @@ def plotroc(FPR, TPR, savestring=None):
 def plot_prec_aa(precs, aarates, savestring=None):
     plt.figure(figsize=(8,6))
     lw = 2
-    plt.plot(aarates, precs, color='red',
+    plt.plot(aarates, precs, color='green',
              lw=lw)
     plt.plot([0, 1], [0.98, 0.98], color='black', lw=lw, linestyle='--')
     plt.plot([.4, .4], [.9, 1], color='black', lw=lw, linestyle='--')
     plt.xlim([0.0, 1.0])
-    plt.xlabel('Auto Approval Rate')
-    plt.ylabel('Precision')
-    plt.text(0.6, .99, 'Goal', color='green')
-    plt.title('Auto-Approval Rate & Precision')
+    plt.xlabel('Auto Approval Rate', fontdict=font_label)
+    plt.ylabel('Precision', fontdict=font_label)
+    plt.title('Auto-Approval Rate & Precision', fontdict=font_title)
     if savestring==None:
         pass
     else:
@@ -138,13 +138,13 @@ def profit_curve(cost_benefit_mat, y_pred_proba, y_true):
     return np.array(profits), np.array(thresholds)
 
 def plot_profit_curve(profthresh, profs):
-    proffig = plt.figure(figsize=(12,8))
+    proffig = plt.figure(figsize=(8,6))
     ax1 = proffig.add_subplot(111)
     ax1.plot([1,0],[0,0], c='black')
-    ax1.set_title("Profit Curve", fontdict=font)
-    ax1.set_ylabel('Profit ($1MMs)', fontdict=font)
-    ax1.set_xlabel('Thresholds', fontdict=font)
-    ax1.plot(profthresh, profs);
+    ax1.set_title("Profit Curve", fontdict=font_title)
+    ax1.set_ylabel('Profit ($1MMs)', fontdict=font_label)
+    ax1.set_xlabel('Thresholds', fontdict=font_label)
+    ax1.plot(profthresh, profs, color='green');
 
 def crossvaltest(params,train_set,train_label,cat_dims,n_splits=2):
     kf = KFold(n_splits=n_splits,shuffle=True)
@@ -163,13 +163,13 @@ def crossvaltest(params,train_set,train_label,cat_dims,n_splits=2):
     return np.mean(res)
 
 def plotfeatureimps(x_train, model):
-    featimps = np.hstack([np.array(x_train_train.columns).reshape(-1,1), np.array(model.feature_importances_).reshape(-1,1)])
+    featimps = np.hstack([np.array(x_train.columns).reshape(-1,1), np.array(model.feature_importances_).reshape(-1,1)])
     featsort = featimps[:,1].argsort()[::-1]
     featimpplt = plt.figure(figsize=(12,4))
     ax3 = featimpplt.add_subplot(111)
-    ax3.bar(x = featimps[:,0][featsort],height=featimps[:,1][featsort])
+    ax3.bar(x = featimps[:,0][featsort],height=featimps[:,1][featsort], color='green')
     ax3.set_xticklabels( featimps[:,0][featsort], rotation=45 )
-    ax3.set_title('Feature Importances', fontdict=font);
+    ax3.set_title('Feature Importances', fontdict=font_title);
 
 # this function runs grid search on several parameters
 def catboost_param_tune(params,train_set,train_label,cat_dims=None,n_splits=2):
